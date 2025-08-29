@@ -1,0 +1,33 @@
+services:
+  xray-server:
+    image: teddysun/xray:1.8.8
+    container_name: xray-server
+    volumes:
+      - ./xray-server/config.json:/etc/xray/config.json
+    networks:
+      - xray-test-net
+    restart: unless-stopped
+    depends_on:
+      - sink
+
+  tester:
+    build: ./tester
+    container_name: tester
+    networks:
+      - xray-test-net
+    depends_on:
+      - xray-server
+    environment:
+      - DATA_TO_SEND_MB=10240
+      - BUFFER_SIZE=65536
+
+  sink:
+    image: alpine:latest
+    container_name: sink
+    command: sh -c "apk add --no-cache netcat-openbsd && nc -lkp 8080 > /dev/null"
+    networks:
+      - xray-test-net
+
+networks:
+  xray-test-net:
+    driver: bridge

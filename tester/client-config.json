@@ -1,0 +1,47 @@
+{
+  "log": {
+    "loglevel": "warning"
+  },
+  "inbounds": [
+    {
+      "listen": "127.0.0.1",
+      "port": 1080,
+      "protocol": "socks",
+      "settings": {
+        "auth": "noauth",
+        "udp": true
+      }
+    }
+  ],
+  "outbounds": [
+    {
+      "protocol": "vless",
+      "settings": {
+        "vnext": [
+          {
+            "address": "xray-server",
+            "port": 443,
+            "users": [
+              {
+                "id": "4ed42747-bf2c-48d6-a554-d75f82912687",
+                "flow": "xtls-rprx-vision",
+                "encryption": "none"
+              }
+            ]
+          }
+        ]
+      },
+      "streamSettings": {
+        "network": "tcp",
+        "security": "reality",
+        "realitySettings": {
+          "fingerprint": "chrome",
+          "serverName": "www.microsoft.com",
+          "publicKey": "mG06fEAr8KzgVcAD4DeIJVO1ielOWtGLu21F3mnZwjg",
+          "shortId": "0123456789abcdef",
+          "spiderX": ""
+        }
+      }
+    }
+  ]
+}
