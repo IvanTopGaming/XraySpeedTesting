@@ -15,10 +15,9 @@ RUN apt-get update && \
     curl unzip ca-certificates && \
     rm -rf /var/lib/apt/lists/*
 
-ENV XRAY_VERSION 1.8.8
 ENV XRAY_ARCH linux-64
 
-RUN curl -L -o xray.zip "https://github.com/XTLS/Xray-core/releases/download/v${XRAY_VERSION}/Xray-${XRAY_ARCH}.zip" && \
+RUN curl -L -o xray.zip "https://github.com/XTLS/Xray-core/releases/latest/download/Xray-${XRAY_ARCH}.zip" && \
     unzip xray.zip xray -d /usr/local/bin/ && \
     rm xray.zip && \
     chmod +x /usr/local/bin/xray

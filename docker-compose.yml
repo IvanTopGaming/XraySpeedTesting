@@ -1,6 +1,6 @@
 services:
   xray-server:
-    image: teddysun/xray:1.8.8
+    image: teddysun/xray:latest
     container_name: xray-server
     volumes:
       - ./xray-server/config.json:/etc/xray/config.json
@@ -11,14 +11,14 @@ services:
       - sink
 
   tester:
-    build: ./tester
+    image: ghcr.io/ivantopgaming/xrayspeedtesting:latest
     container_name: tester
     networks:
       - xray-test-net
     depends_on:
       - xray-server
     environment:
-      - DATA_TO_SEND_MB=10240
+      - DATA_TO_SEND_MB=102400
       - BUFFER_SIZE=65536
 
   sink:
