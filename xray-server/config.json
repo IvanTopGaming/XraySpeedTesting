@@ -26,7 +26,7 @@
           "serverNames": [
             "www.microsoft.com"
           ],
-          "privateKey": "YACViibnUaxSZC-CUTdnLy7c4mCNTDQz8jbpsLERglU",
+          "privateKey": "mATnJTCQwMRdvK1Qr0X6TxsWKbmWZALbBtA9smIt-Xs",
           "minClientVer": "1.8.0",
           "maxClientVer": "1.8.8",
           "maxTimeDiff": 60000,
