@@ -2,11 +2,11 @@ FROM golang:1.26-alpine AS builder
 
 WORKDIR /app
 
-RUN go mod init speedtest && \
-    go get golang.org/x/net/proxy@latest
+COPY go.mod go.sum ./
+RUN go mod download
 
 COPY speedtest.go .
-RUN go build -o speedtest speedtest.go
+RUN go build -trimpath -o speedtest speedtest.go
 
 FROM debian:12-slim
 
@@ -15,7 +15,7 @@ RUN apt-get update && \
     curl unzip ca-certificates && \
     rm -rf /var/lib/apt/lists/*
 
-ENV XRAY_ARCH linux-64
+ENV XRAY_ARCH=linux-64
 
 RUN curl -L -o xray.zip "https://github.com/XTLS/Xray-core/releases/latest/download/Xray-${XRAY_ARCH}.zip" && \
     unzip xray.zip xray -d /usr/local/bin/ && \

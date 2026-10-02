@@ -16,7 +16,10 @@ services:
     networks:
       - xray-test-net
     depends_on:
-      - xray-server
+      xray-server:
+        condition: service_started
+      sink:
+        condition: service_healthy
     environment:
       - DATA_TO_SEND_MB=102400
       - BUFFER_SIZE=65536
@@ -27,6 +30,15 @@ services:
     command: sh -c "apk add --no-cache netcat-openbsd && nc -lkp 8080 > /dev/null"
     networks:
       - xray-test-net
+    healthcheck:
+      # Deliberately checks the process, not the port. The sink is a
+      # single-connection `nc -lkp`, so a probe connection to 8080 competes with
+      # the data stream and makes the throughput test die with connection resets.
+      test: ["CMD-SHELL", "pgrep -f 'nc -lkp 8080' > /dev/null"]
+      interval: 2s
+      timeout: 2s
+      retries: 30
+      start_period: 5s
 
 networks:
   xray-test-net:

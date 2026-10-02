@@ -32,10 +32,14 @@ docker compose up && docker logs -f tester
 
 Environment variables for the `tester` service in `docker-compose.yml`:
 
-| Variable         | Default  | Description                        |
-|------------------|----------|------------------------------------|
-| `DATA_TO_SEND_MB` | `102400` | Total data to send, in megabytes  |
-| `BUFFER_SIZE`     | `65536`  | Write buffer size, in bytes       |
+| Variable         | Default  | Description                                     |
+|------------------|----------|-------------------------------------------------|
+| `DATA_TO_SEND_MB` | `102400` | Total data to send, in megabytes               |
+| `BUFFER_SIZE`     | `65536`  | Write buffer size, in bytes                    |
+| `DIAL_TIMEOUT`    | `60s`    | How long to keep retrying the tunnel connection |
+
+The tester retries the connection until the tunnel is usable, so it also survives a
+cold start where the sink is still installing `netcat`.
 
 ## Important: use a separate machine for realistic results
 
@@ -49,11 +53,30 @@ For accurate absolute numbers, run `xray-server` (and `sink`) on a remote machin
 
 ```
 .
+├── .gitattributes
 ├── docker-compose.yml
 ├── xray-server/
 │   └── config.json       # Xray server config (VLESS inbound, REALITY)
 └── tester/
     ├── Dockerfile         # Builds Go binary + downloads Xray client
     ├── client-config.json # Xray client config (SOCKS5 inbound, VLESS outbound)
+    ├── go.mod / go.sum    # Pinned dependencies
     └── speedtest.go       # Go speed test program
 ```
+
+## REALITY keypair
+
+`xray-server/config.json` holds the REALITY `privateKey`, and
+`tester/client-config.json` holds the matching `publicKey`. They must be an X25519
+pair — a mismatch makes every handshake fail with
+`REALITY: received real certificate (potential MITM or redirection)`.
+
+To generate a new pair:
+
+```bash
+docker run --rm teddysun/xray:latest xray x25519
+```
+
+The `Password (PublicKey)` value goes into the client config. Do not edit
+`minClientVer` / `maxClientVer` unless you also pin the client Xray version — the
+server rejects any client outside that range.
